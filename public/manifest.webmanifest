@@ -1,0 +1,10 @@
+{
+  "name": "Vaultline",
+  "short_name": "Vaultline",
+  "description": "Secure digital banking demo with real-time payments and fraud detection",
+  "start_url": "/dashboard.html",
+  "display": "standalone",
+  "background_color": "#f6fafd",
+  "theme_color": "#006859",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

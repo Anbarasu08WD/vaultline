@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vaultline | Secure digital banking</title>
+  <meta name="description" content="Move money in real time. Every payment is checked for fraud before it leaves your account.">
+  <meta name="theme-color" content="#006859">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/js/tw.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen">
+  <header class="bg-surface/90 backdrop-blur border-b border-outline-variant/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <span class="w-9 h-9 rounded-lg bg-primary text-on-primary flex items-center justify-center"><span class="material-symbols-outlined icon-fill">shield_lock</span></span>
+        <span class="font-display font-bold text-xl">Vaultline</span>
+      </a>
+      <span class="chip chip-muted"><span class="material-symbols-outlined text-[16px]">science</span>Demo project</span>
+    </div>
+  </header>
+
+  <main class="relative overflow-hidden">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-32 left-1/4 h-96 w-96 rounded-full bg-primary/10 blur-3xl"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute top-72 -right-24 h-96 w-96 rounded-full bg-secondary-container/40 blur-3xl"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-8 py-10 lg:py-14">
+      <section class="max-w-3xl">
+        <h1 class="font-display font-bold text-[30px] leading-[38px] lg:text-[40px] lg:leading-[48px] tracking-tight">Every payment is checked before it leaves your account.</h1>
+        <p class="mt-4 text-lg text-on-surface-variant">Send, receive and manage your money at any hour. Each payment gets a risk score in real time, and suspicious ones are held for review before any money moves.</p>
+        <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-secondary">
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary icon-fill">verified</span>Risk score on every payment</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary">lock_clock</span>Held payments never move money</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary">receipt_long</span>Every action is logged</li>
+        </ul>
+      </section>
+
+      <div class="mt-10 grid lg:grid-cols-12 gap-6 items-start">
+        <!-- Auth card -->
+        <div class="lg:col-span-5 bg-surface-container-lowest rounded-xl shadow-xl p-6 relative overflow-hidden">
+          <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-primary-fixed"></div>
+          <p id="auth-notice" class="hidden mb-4 rounded-lg bg-tertiary-fixed/60 text-on-tertiary-fixed text-sm font-medium px-3 py-2" role="status"></p>
+          <div class="seg mb-6" role="group" aria-label="Choose sign in or create account">
+            <button type="button" id="tab-login" aria-pressed="true">Sign in</button>
+            <button type="button" id="tab-register" aria-pressed="false">Create account</button>
+          </div>
+
+          <form id="auth-form" class="grid gap-4" novalidate>
+            <div id="name-wrap" class="hidden">
+              <label class="label" for="full_name">Full name</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none">person</span>
+                <input class="field field-icon" id="full_name" autocomplete="name">
+              </div>
+            </div>
+            <div>
+              <label class="label" for="email">Email address</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none">alternate_email</span>
+                <input class="field field-icon" id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+              </div>
+            </div>
+            <div>
+              <label class="label" for="password">Password</label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none">key</span>
+                <input class="field field-icon pr-12" id="password" type="password" autocomplete="current-password" required>
+                <button type="button" id="pw-toggle" class="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg text-outline hover:text-on-surface" aria-label="Show password"><span class="material-symbols-outlined" id="pw-icon">visibility</span></button>
+              </div>
+              <p id="pw-hint" class="hidden text-sm text-on-surface-variant mt-1.5">At least 8 characters, with letters and numbers.</p>
+            </div>
+            <p id="auth-error" class="text-error text-sm font-medium min-h-[1.25rem]" role="alert" aria-live="assertive"></p>
+            <button class="btn btn-primary w-full" id="auth-submit" type="submit">Sign in</button>
+          </form>
+          <p class="mt-5 text-sm text-on-surface-variant flex items-start gap-2"><span class="material-symbols-outlined text-[18px] text-primary">info</span>This is a demo. Don't enter real banking details or reuse a real password.</p>
+        </div>
+
+        <!-- Live risk check -->
+        <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl shadow-xl p-5 sm:p-6" aria-label="Example of a payment being checked">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center"><span class="material-symbols-outlined text-primary">query_stats</span></span>
+              <div>
+                <h2 class="font-display font-semibold text-lg leading-tight">Live payment risk check</h2>
+                <p class="text-sm text-on-surface-variant">How a payment is scored</p>
+              </div>
+            </div>
+            <span class="chip chip-warn"><span class="material-symbols-outlined text-[14px]">radar</span>Example</span>
+          </div>
+
+          <div class="mt-5 rounded-xl bg-surface-container p-4">
+            <p class="text-sm text-on-surface-variant">Transfer being checked</p>
+            <p class="font-display font-semibold text-3xl mt-1">48,000.00</p>
+            <p class="text-sm mt-1">To account <span class="font-semibold">VL2291847560</span></p>
+          </div>
+
+          <ul class="mt-4 grid gap-2.5 text-sm">
+            <li class="check-row flex items-center justify-between gap-3 rounded-xl bg-surface-container-low p-3.5">
+              <span class="flex items-center gap-3"><span class="material-symbols-outlined text-tertiary">paid</span><span><span class="font-semibold block">Large amount</span><span class="text-on-surface-variant">Above the 25,000 review threshold</span></span></span>
+              <span class="chip chip-warn">+30 risk</span></li>
+            <li class="check-row flex items-center justify-between gap-3 rounded-xl bg-surface-container-low p-3.5">
+              <span class="flex items-center gap-3"><span class="material-symbols-outlined text-tertiary">trending_up</span><span><span class="font-semibold block">Five times your usual spending</span><span class="text-on-surface-variant">Compared with your recent payments</span></span></span>
+              <span class="chip chip-warn">+30 risk</span></li>
+            <li class="check-row flex items-center justify-between gap-3 rounded-xl bg-surface-container-low p-3.5">
+              <span class="flex items-center gap-3"><span class="material-symbols-outlined text-tertiary">person_add</span><span><span class="font-semibold block">First payment to this recipient</span><span class="text-on-surface-variant">You haven't paid this account before</span></span></span>
+              <span class="chip chip-warn">+20 risk</span></li>
+            <li class="check-row flex items-center justify-between gap-3 rounded-xl bg-surface-container-low p-3.5">
+              <span class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">speed</span><span><span class="font-semibold block">Normal payment pace</span><span class="text-on-surface-variant">1 payment in the last 10 minutes</span></span></span>
+              <span class="chip chip-ok">+0 risk</span></li>
+          </ul>
+
+          <div class="check-verdict mt-4 rounded-xl bg-error-container p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="flex items-center gap-2 font-display font-semibold text-on-error-container"><span class="material-symbols-outlined icon-fill">pan_tool</span>Held for review <span class="chip bg-error text-white">Risk 80 / 100</span></p>
+            </div>
+            <div class="mt-3 h-2 rounded-full bg-white/70 overflow-hidden"><div class="meter-fill h-full rounded-full bg-error"></div></div>
+            <p class="mt-3 text-sm text-on-error-container">No money moves while a payment is held. An analyst reviews it and can release or reject the payment.</p>
+          </div>
+        </div>
+      </div>
+
+      <section class="mt-12 grid md:grid-cols-3 gap-5">
+        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+          <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center mb-4"><span class="material-symbols-outlined text-primary">bolt</span></span>
+          <h2 class="font-display font-semibold text-lg">Real-time payments</h2>
+          <p class="mt-2 text-on-surface-variant">Transfers, deposits and withdrawals update your balance straight away. The dashboard refreshes on its own.</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+          <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center mb-4"><span class="material-symbols-outlined text-primary">ac_unit</span></span>
+          <h2 class="font-display font-semibold text-lg">Freeze in one tap</h2>
+          <p class="mt-2 text-on-surface-variant">Switch any account off to stop payments in and out until you switch it back on.</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+          <span class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center mb-4"><span class="material-symbols-outlined text-primary">fact_check</span></span>
+          <h2 class="font-display font-semibold text-lg">Human review</h2>
+          <p class="mt-2 text-on-surface-variant">Flagged payments go to a review queue where an analyst can clear them or confirm fraud.</p>
+        </div>
+      </section>
+      <section class="mt-14" aria-labelledby="how-title">
+        <h2 id="how-title" class="font-display font-semibold text-2xl">How it works</h2>
+        <ol class="mt-5 grid md:grid-cols-3 gap-5">
+          <li class="bg-surface-container-lowest rounded-xl p-6 shadow-sm"><span class="chip chip-ok">Step 1</span><h3 class="font-display font-semibold text-lg mt-3">Open your account</h3><p class="mt-2 text-on-surface-variant">Register in under a minute. A savings account is created for you straight away.</p></li>
+          <li class="bg-surface-container-lowest rounded-xl p-6 shadow-sm"><span class="chip chip-ok">Step 2</span><h3 class="font-display font-semibold text-lg mt-3">Move money</h3><p class="mt-2 text-on-surface-variant">Send to a verified recipient, deposit, withdraw, or schedule payments. Review everything before it goes.</p></li>
+          <li class="bg-surface-container-lowest rounded-xl p-6 shadow-sm"><span class="chip chip-ok">Step 3</span><h3 class="font-display font-semibold text-lg mt-3">Stay protected</h3><p class="mt-2 text-on-surface-variant">Every payment is risk-scored. You get a notification if anything is held, and you can freeze accounts any time.</p></li>
+        </ol>
+      </section>
+
+      <section class="mt-14 max-w-3xl" aria-labelledby="faq-title">
+        <h2 id="faq-title" class="font-display font-semibold text-2xl">Common questions</h2>
+        <div class="mt-5 grid gap-3">
+          <details class="bg-surface-container-lowest rounded-xl shadow-sm"><summary class="p-4 flex justify-between items-center font-semibold">Why was my payment held?<span class="material-symbols-outlined chev transition-transform">expand_more</span></summary><p class="px-4 pb-4 text-on-surface-variant">Payments get a risk score from 0 to 100. Very large amounts, a first payment to a new recipient, or a sudden burst of payments raise the score. At 70 or more the payment is held and no money moves until an analyst reviews it.</p></details>
+          <details class="bg-surface-container-lowest rounded-xl shadow-sm"><summary class="p-4 flex justify-between items-center font-semibold">Can I undo a payment?<span class="material-symbols-outlined chev transition-transform">expand_more</span></summary><p class="px-4 pb-4 text-on-surface-variant">Completed payments can't be reversed. That's why you review each payment before sending, and why the recipient's name is shown before you confirm.</p></details>
+          <details class="bg-surface-container-lowest rounded-xl shadow-sm"><summary class="p-4 flex justify-between items-center font-semibold">What if I think my account is at risk?<span class="material-symbols-outlined chev transition-transform">expand_more</span></summary><p class="px-4 pb-4 text-on-surface-variant">Open Security and switch on the freeze for any account, or freeze all of them at once. You can also sign out of all devices and change your password.</p></details>
+          <details class="bg-surface-container-lowest rounded-xl shadow-sm"><summary class="p-4 flex justify-between items-center font-semibold">Is this a real bank?<span class="material-symbols-outlined chev transition-transform">expand_more</span></summary><p class="px-4 pb-4 text-on-surface-variant">No. Vaultline is a demonstration project. It holds no real money, so don't enter real banking details.</p></details>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t border-outline-variant/40 bg-surface-container-low">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 py-5 text-sm text-on-surface-variant">Vaultline is a demonstration project for learning. It is not a real bank and holds no real money.</div>
+  </footer>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#006859">
+  <title>Dashboard | Vaultline</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/js/tw.js"></script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="min-h-screen">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg">Skip to content</a>
+
+  <header class="sticky top-0 z-40 bg-surface/90 backdrop-blur border-b border-outline-variant/40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-9 h-9 rounded-lg bg-primary text-on-primary flex items-center justify-center"><span class="material-symbols-outlined icon-fill">shield_lock</span></span>
+        <span class="font-display font-bold text-xl">Vaultline</span>
+      </div>
+
+      <nav class="hidden lg:flex items-center gap-1" aria-label="Main">
+        <button class="tnav" data-nav="accounts" type="button">Accounts</button>
+        <button class="tnav" data-nav="move" type="button">Move money</button>
+        <button class="tnav" data-nav="activity" type="button">Activity</button>
+        <button class="tnav" data-nav="security" type="button">Security</button>
+      </nav>
+
+      <div class="flex items-center gap-1.5 sm:gap-3">
+        <button id="nav-admin" data-nav="admin" type="button" class="hidden items-center gap-1.5 px-3 h-10 rounded-lg bg-surface-container hover:bg-surface-container-high text-sm font-semibold" aria-label="Fraud review">
+          <span class="material-symbols-outlined text-[20px] text-tertiary">shield_person</span><span class="hidden sm:inline">Fraud review</span>
+          <span class="hidden sm:inline px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-semibold">Admin</span>
+        </button>
+        <button id="bell" type="button" class="relative w-10 h-10 rounded-lg text-on-surface-variant hover:bg-surface-container" aria-label="Notifications" aria-haspopup="true" aria-expanded="false">
+          <span class="material-symbols-outlined">notifications</span>
+          <span id="bell-dot" class="hidden absolute top-1 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-white text-[11px] font-bold leading-[18px] text-center"></span>
+        </button>
+        <div class="flex items-center gap-2">
+          <span id="avatar" class="w-9 h-9 rounded-full bg-primary-container text-on-primary-container font-semibold flex items-center justify-center text-sm" aria-hidden="true"></span>
+          <span id="who" class="hidden md:block text-sm font-semibold leading-tight max-w-[10rem] truncate"></span>
+        </div>
+        <button id="logout" type="button" class="btn btn-soft btn-sm" aria-label="Sign out"><span class="material-symbols-outlined text-[20px]">logout</span><span class="hidden sm:inline">Sign out</span></button>
+      </div>
+    </div>
+  </header>
+
+  <div id="notif-panel" class="popover hidden no-print" role="region" aria-label="Notifications">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-outline-variant/40">
+      <h2 class="font-display font-semibold">Notifications</h2>
+      <button id="notif-close" type="button" class="w-8 h-8 rounded-md hover:bg-surface-container" aria-label="Close notifications"><span class="material-symbols-outlined text-[20px]">close</span></button>
+    </div>
+    <div id="notif-list" class="max-h-[60vh] overflow-auto divide-y divide-outline-variant/40"></div>
+  </div>
+
+  <main id="main" class="max-w-7xl mx-auto px-4 sm:px-8 pt-6 pb-28 lg:pb-12 no-print">
+
+    <!-- Accounts -->
+    <section id="view-accounts" aria-labelledby="greet">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="flex items-center gap-1.5 text-sm text-on-surface-variant"><span class="material-symbols-outlined text-[16px] text-primary icon-fill">sync</span>Balances update automatically</p>
+          <h1 id="greet" class="font-display font-semibold text-[24px] leading-8 lg:text-[32px] lg:leading-10 mt-1">Welcome back</h1>
+        </div>
+        <div class="grid grid-cols-3 gap-2 w-full sm:w-auto">
+          <button class="btn btn-primary" data-go="move" data-mode="transfer" type="button"><span class="material-symbols-outlined text-[20px]">north_east</span>Send</button>
+          <button class="btn btn-white" data-go="move" data-mode="deposit" type="button"><span class="material-symbols-outlined text-[20px]">south_west</span>Deposit</button>
+          <button class="btn btn-white" data-go="move" data-mode="withdraw" type="button"><span class="material-symbols-outlined text-[20px]">account_balance</span>Withdraw</button>
+        </div>
+      </div>
+
+      <div id="held-banner" class="hidden mt-5"></div>
+      <div id="onboarding" class="hidden mt-5"></div>
+
+      <div class="grid lg:grid-cols-3 gap-4 mt-6">
+        <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+          <p class="flex items-center gap-2 text-sm font-semibold text-on-surface-variant">Total balance <span class="w-2 h-2 rounded-full bg-primary"></span></p>
+          <p id="total" class="font-display font-semibold text-[36px] leading-[44px] sm:text-5xl tracking-tight mt-1 skeleton w-56 max-w-full">0.00</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6" id="stat-tiles"></div>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+          <h2 class="font-display font-semibold text-lg">Where your money is</h2>
+          <div id="alloc-bar" class="flex h-3 rounded-full overflow-hidden bg-surface-container-high mt-4" role="img" aria-label="Balance split across accounts"></div>
+          <ul id="alloc-legend" class="mt-4 grid gap-2 text-sm"></ul>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-8 mb-3">
+        <h2 class="font-display font-semibold text-xl">Your accounts <span id="acc-count" class="chip chip-muted ml-1"></span></h2>
+      </div>
+      <div id="account-list" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="skeleton h-48"></div><div class="skeleton h-48 hidden md:block"></div><div class="skeleton h-48 hidden xl:block"></div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-4 mt-4">
+        <form id="open-form" class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+          <span class="w-11 h-11 rounded-full bg-primary-fixed text-primary flex items-center justify-center mb-4"><span class="material-symbols-outlined">add_circle</span></span>
+          <h2 class="font-display font-semibold text-lg">Open another account</h2>
+          <p id="open-note" class="text-on-surface-variant mt-1 text-sm">Keep spending and savings apart. You can hold up to 5 accounts.</p>
+          <label class="label mt-4" for="new-type">Account type</label>
+          <select id="new-type" class="field"><option value="savings">Savings</option><option value="current">Current</option></select>
+          <label class="label mt-4" for="new-name">Account name (optional)</label>
+          <input id="new-name" class="field" maxlength="30" placeholder="e.g. Holiday fund" autocomplete="off">
+          <button class="btn btn-primary w-full mt-4" type="submit">Open account</button>
+        </form>
+        <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+          <div class="flex items-center justify-between">
+            <div><h2 class="font-display font-semibold text-lg">Recent activity</h2><p class="text-sm text-on-surface-variant">Latest payments across all accounts</p></div>
+            <button class="text-sm font-semibold text-primary hover:underline" data-go="activity" type="button">See all</button>
+          </div>
+          <div id="recent-list" class="mt-3 divide-y divide-outline-variant/40"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Move money -->
+    <section id="view-move" class="hidden max-w-2xl mx-auto" aria-labelledby="move-title">
+      <p class="flex items-center gap-1.5 text-sm font-semibold text-primary"><span class="material-symbols-outlined text-[18px]">bolt</span>Instant payments</p>
+      <h1 id="move-title" class="font-display font-semibold text-[24px] leading-8 lg:text-[32px] lg:leading-10 mt-1">Move money</h1>
+      <p class="text-on-surface-variant mt-1">Every payment is risk-checked before it is sent.</p>
+
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm mt-5 overflow-hidden">
+        <div class="p-3 bg-surface-container-low">
+          <div class="seg seg-primary" role="group" aria-label="Type of payment">
+            <button type="button" data-mode="transfer" aria-pressed="true"><span class="material-symbols-outlined text-[20px]">north_east</span>Send</button>
+            <button type="button" data-mode="deposit" aria-pressed="false"><span class="material-symbols-outlined text-[20px]">south_west</span>Deposit</button>
+            <button type="button" data-mode="withdraw" aria-pressed="false"><span class="material-symbols-outlined text-[20px]">account_balance</span>Withdraw</button>
+            <button type="button" data-mode="schedule" aria-pressed="false"><span class="material-symbols-outlined text-[20px]">event_repeat</span>Schedule</button>
+          </div>
+        </div>
+        <form id="move-form" class="grid gap-5 p-5 sm:p-6" novalidate>
+          <div>
+            <div class="flex justify-between items-baseline gap-2"><label class="label" for="acc-select" id="acc-label">From account</label><span id="avail" class="text-sm text-on-surface-variant mb-1.5"></span></div>
+            <select id="acc-select" class="field"></select>
+          </div>
+          <div id="to-wrap">
+            <label class="label" for="to-number">Receiving account number</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none">tag</span>
+              <input id="to-number" class="field field-icon" placeholder="VL0123456789" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="12" aria-describedby="verify">
+            </div>
+            <div id="verify" class="field-hint" aria-live="polite"></div>
+            <div id="save-payee-wrap" class="hidden mt-3 rounded-xl bg-surface-container-low p-3">
+              <label class="flex items-center gap-2 text-sm font-semibold"><input id="save-payee" type="checkbox" class="w-5 h-5 accent-[#006859]">Save this recipient for next time</label>
+              <input id="payee-name" class="field mt-2" maxlength="40" placeholder="Recipient name" autocomplete="off" aria-label="Recipient name">
+            </div>
+            <div id="payees-wrap" class="hidden mt-3">
+              <p class="text-sm text-on-surface-variant mb-2">Quick pick</p>
+              <div id="payees" class="flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+          <div>
+            <label class="label" for="amount">Amount</label>
+            <div class="relative">
+              <span id="cur-sym" class="absolute left-4 top-1/2 -translate-y-1/2 font-display text-2xl text-on-surface-variant pointer-events-none">$</span>
+              <input id="amount" class="field font-display text-2xl font-semibold" style="padding-left:2.6rem;min-height:60px" inputmode="decimal" placeholder="0.00" autocomplete="off">
+            </div>
+            <div class="flex flex-wrap gap-2 mt-3" id="quick-amounts">
+              <button type="button" class="pill" data-add="100">+100</button>
+              <button type="button" class="pill" data-add="500">+500</button>
+              <button type="button" class="pill" data-add="1000">+1,000</button>
+              <button type="button" class="pill" data-add="max" id="max-btn">Max available</button>
+            </div>
+            <div id="limit-box" class="mt-4 rounded-xl bg-surface-container-low p-3.5 text-sm">
+              <div class="flex justify-between gap-3"><span>Daily send limit: <b id="limit-total"></b></span><span>Left today: <b id="limit-left"></b></span></div>
+              <div class="h-2 rounded-full bg-surface-container-high mt-2 overflow-hidden"><div id="limit-fill" class="h-full rounded-full bg-primary" style="width:0"></div></div>
+              <p class="text-xs text-on-surface-variant mt-1.5">Applies to money sent or withdrawn. Resets at midnight UTC.</p>
+            </div>
+          </div>
+          <div id="sched-wrap" class="hidden grid sm:grid-cols-2 gap-4">
+            <div><label class="label" for="sched-freq">Repeat</label>
+              <select id="sched-freq" class="field"><option value="once">Just once</option><option value="weekly">Every week</option><option value="monthly">Every month</option></select></div>
+            <div><label class="label" for="sched-date">First payment on</label><input id="sched-date" type="date" class="field"></div>
+            <p class="sm:col-span-2 text-sm text-on-surface-variant -mt-1">Scheduled payments run each morning at 00:00 UTC and go through the same risk checks.</p>
+          </div>
+          <div>
+            <label class="label" for="note">Note (optional)</label>
+            <input id="note" class="field" maxlength="140" autocomplete="off">
+          </div>
+          <div class="flex gap-3 rounded-xl bg-secondary-container/50 p-4">
+            <span class="material-symbols-outlined text-primary">verified_user</span>
+            <p class="text-sm"><span class="font-semibold block">Risk check runs first</span>Large or unusual payments may be held for review. A held payment never moves money.</p>
+          </div>
+          <p id="form-error" class="field-error hidden" role="alert"></p>
+          <button id="move-submit" class="btn btn-primary w-full" type="submit">Review payment</button>
+        </form>
+      </div>
+
+      <div class="grid gap-4 mt-4">
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+          <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">event_repeat</span>Scheduled payments</h2>
+          <div id="sched-list" class="mt-3 divide-y divide-outline-variant/40"></div>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+          <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">group</span>Saved recipients</h2>
+          <div id="payee-list" class="mt-3 divide-y divide-outline-variant/40"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity -->
+    <section id="view-activity" class="hidden" aria-labelledby="act-title">
+      <h1 id="act-title" class="font-display font-semibold text-[24px] leading-8 lg:text-[32px] lg:leading-10">Activity</h1>
+      <p class="text-on-surface-variant mt-1">Every payment on your accounts, newest first. Select one to see its receipt.</p>
+      <div class="grid sm:grid-cols-[1fr_16rem] gap-3 mt-5">
+        <div>
+          <label class="label" for="search">Search</label>
+          <div class="relative"><span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none">search</span>
+          <input id="search" class="field field-icon" type="search" placeholder="Note, account number or type"></div>
+        </div>
+        <div><label class="label" for="filter-acc">Account</label><select id="filter-acc" class="field"></select></div>
+      </div>
+      <details class="mt-3 bg-surface-container-lowest rounded-xl shadow-sm">
+        <summary class="p-4 flex items-center justify-between font-semibold"><span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary">download</span>Download a statement</span><span class="material-symbols-outlined chev transition-transform">expand_more</span></summary>
+        <div class="px-4 pb-4 flex flex-wrap items-end gap-3">
+          <div><label class="label" for="st-from">From</label><input id="st-from" type="date" class="field"></div>
+          <div><label class="label" for="st-to">To</label><input id="st-to" type="date" class="field"></div>
+          <button id="st-download" type="button" class="btn btn-white"><span class="material-symbols-outlined text-[20px]">download</span>CSV</button>
+          <p class="text-sm text-on-surface-variant w-full">Uses the account chosen above. Dates are optional.</p>
+        </div>
+      </details>
+      <div class="flex gap-2 mt-4 nowrap-scroll" id="type-pills" role="group" aria-label="Filter by type">
+        <button class="pill" data-type="all" aria-pressed="true" type="button">All</button>
+        <button class="pill" data-type="in" aria-pressed="false" type="button">Money in</button>
+        <button class="pill" data-type="out" aria-pressed="false" type="button">Money out</button>
+        <button class="pill" data-type="flagged" aria-pressed="false" type="button">Flagged or held</button>
+      </div>
+      <div id="tx-list" class="bg-surface-container-lowest rounded-xl shadow-sm mt-4 divide-y divide-outline-variant/40"></div>
+      <div class="text-center mt-4"><button id="load-more" type="button" class="btn btn-white hidden">Load older payments</button></div>
+    </section>
+
+    <!-- Security -->
+    <section id="view-security" class="hidden" aria-labelledby="sec-title">
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6 flex items-start gap-4">
+        <span class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary icon-fill">shield</span></span>
+        <div>
+          <h1 id="sec-title" class="font-display font-semibold text-[24px] leading-8 lg:text-[32px] lg:leading-10">Security</h1>
+          <p class="text-on-surface-variant mt-1">Freeze accounts instantly and review anything unusual on your accounts.</p>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-4 mt-4 items-start">
+        <div class="lg:col-span-2 grid gap-4">
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+            <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">power_settings_new</span>Freeze controls</h2>
+            <p class="text-sm text-on-surface-variant mt-1">A frozen account can't send, receive, deposit or withdraw until you switch it back on.</p>
+            <div id="freeze-list" class="mt-4 grid gap-3"></div>
+            <button id="freeze-all" type="button" class="btn btn-danger w-full mt-4"><span class="material-symbols-outlined text-[20px]">emergency</span><span id="freeze-all-label">Freeze all accounts</span></button>
+          </div>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+            <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">notification_important</span>Security alerts</h2>
+            <div class="flex gap-2 mt-3 nowrap-scroll" id="alert-pills" role="group" aria-label="Filter alerts">
+              <button class="pill" data-astatus="all" aria-pressed="true" type="button">All</button>
+              <button class="pill" data-astatus="open" aria-pressed="false" type="button">Under review</button>
+              <button class="pill" data-astatus="resolved" aria-pressed="false" type="button">Resolved</button>
+              <button class="pill" data-astatus="confirmed" aria-pressed="false" type="button">Confirmed fraud</button>
+            </div>
+            <div id="alert-list" class="mt-4 grid gap-3"></div>
+          </div>
+        </div>
+        <aside class="grid gap-4">
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+            <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">person</span>Profile</h2>
+            <form id="profile-form" class="grid gap-3 mt-4" novalidate>
+              <div><label class="label" for="profile-name">Full name</label><input id="profile-name" class="field" maxlength="60" autocomplete="name"></div>
+              <div><label class="label" for="profile-email">Email</label><input id="profile-email" class="field" disabled></div>
+              <button class="btn btn-soft" type="submit">Save name</button>
+            </form>
+          </div>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+            <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">key</span>Password and devices</h2>
+            <form id="pw-form" class="grid gap-3 mt-4" novalidate>
+              <div><label class="label" for="pw-current">Current password</label><input id="pw-current" type="password" class="field" autocomplete="current-password"></div>
+              <div><label class="label" for="pw-new">New password</label><input id="pw-new" type="password" class="field" autocomplete="new-password"><p class="text-xs text-on-surface-variant mt-1">At least 8 characters, with letters and numbers.</p></div>
+              <button class="btn btn-primary" type="submit">Change password</button>
+            </form>
+            <button id="revoke" type="button" class="btn btn-soft w-full mt-3"><span class="material-symbols-outlined text-[20px]">devices</span>Sign out of all devices</button>
+          </div>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+            <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">history</span>Recent account activity</h2>
+            <div id="events" class="mt-3 divide-y divide-outline-variant/40"></div>
+          </div>
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-6">
+            <h2 class="font-display font-semibold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">rule</span>How payments are checked</h2>
+            <ul class="mt-4 grid gap-3 text-sm">
+              <li class="flex gap-3"><span class="material-symbols-outlined text-tertiary text-[20px]">paid</span><span>Large amounts add risk</span></li>
+              <li class="flex gap-3"><span class="material-symbols-outlined text-tertiary text-[20px]">trending_up</span><span>Payments far above your usual spending add risk</span></li>
+              <li class="flex gap-3"><span class="material-symbols-outlined text-tertiary text-[20px]">person_add</span><span>A first payment to a new recipient adds risk</span></li>
+              <li class="flex gap-3"><span class="material-symbols-outlined text-tertiary text-[20px]">speed</span><span>Many payments in 10 minutes add risk</span></li>
+              <li class="flex gap-3"><span class="material-symbols-outlined text-tertiary text-[20px]">key_off</span><span>5 wrong passwords lock sign-in for 15 minutes</span></li>
+            </ul>
+            <div class="mt-5 rounded-xl bg-surface-container p-4 text-sm">
+              <p><span class="font-semibold">40 or more:</span> an alert is raised.</p>
+              <p class="mt-1"><span class="font-semibold">70 or more:</span> the payment is held and no money moves.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Admin -->
+    <section id="view-admin" class="hidden" aria-labelledby="adm-title">
+      <p class="flex items-center gap-1.5 text-sm font-semibold text-tertiary"><span class="material-symbols-outlined text-[18px]">shield_person</span>Analyst console</p>
+      <h1 id="adm-title" class="font-display font-semibold text-[24px] leading-8 lg:text-[32px] lg:leading-10 mt-1">Fraud review</h1>
+      <div id="admin-stats" class="grid grid-cols-2 lg:grid-cols-6 gap-3 mt-5"></div>
+      <div class="seg mt-6 max-w-md" role="group" aria-label="Admin sections">
+        <button type="button" data-atab="alerts" aria-pressed="true">Alerts</button>
+        <button type="button" data-atab="users" aria-pressed="false">Customers</button>
+        <button type="button" data-atab="audit" aria-pressed="false">Audit log</button>
+      </div>
+      <div id="atab-alerts" class="grid lg:grid-cols-2 gap-4 mt-4 items-start">
+        <div>
+          <h2 class="font-display font-semibold text-lg mb-3">Alerts to review</h2>
+          <div id="admin-alerts" class="grid gap-3"></div>
+        </div>
+        <div>
+          <h2 class="font-display font-semibold text-lg mb-3">Latest payments across the bank</h2>
+          <div id="admin-tx" class="bg-surface-container-lowest rounded-xl shadow-sm divide-y divide-outline-variant/40"></div>
+        </div>
+      </div>
+      <div id="atab-users" class="hidden mt-4 grid md:grid-cols-2 gap-3"></div>
+      <div id="atab-audit" class="hidden mt-4 bg-surface-container-lowest rounded-xl shadow-sm divide-y divide-outline-variant/40"></div>
+    </section>
+  </main>
+
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-surface-container-lowest border-t border-outline-variant/50 bottom-bar no-print" aria-label="Main">
+    <div class="grid grid-cols-4">
+      <button class="bnav" data-nav="accounts" type="button"><span class="material-symbols-outlined">account_balance_wallet</span>Accounts</button>
+      <button class="bnav" data-nav="move" type="button"><span class="material-symbols-outlined">swap_horiz</span>Move money</button>
+      <button class="bnav" data-nav="activity" type="button"><span class="material-symbols-outlined">receipt_long</span>Activity</button>
+      <button class="bnav" data-nav="security" type="button"><span class="material-symbols-outlined">shield</span>Security</button>
+    </div>
+  </nav>
+
+  <div id="modal-root"></div>
+  <script src="/js/common.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
