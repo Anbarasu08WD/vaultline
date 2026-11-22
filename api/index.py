@@ -24,6 +24,27 @@ from flask import Flask, request, jsonify, g, send_from_directory, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+
+
+class RestoreApiPath:
+    """Vercel rewrites /api/<anything> to /api/index?__path=<anything>.
+    Put the original path back so Flask routes see /api/<anything>."""
+
+    def __init__(self, wsgi):
+        self.wsgi = wsgi
+
+    def __call__(self, environ, start_response):
+        pairs = [p for p in environ.get("QUERY_STRING", "").split("&") if p]
+        for p in pairs:
+            if p.startswith("__path="):
+                from urllib.parse import unquote_plus
+                environ["PATH_INFO"] = "/api/" + unquote_plus(p[7:]).lstrip("/")
+                environ["QUERY_STRING"] = "&".join(x for x in pairs if not x.startswith("__path="))
+                break
+        return self.wsgi(environ, start_response)
+
+
+app.wsgi_app = RestoreApiPath(app.wsgi_app)
 log = logging.getLogger("vaultline")
 
 DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
@@ -1325,14 +1346,14 @@ def health():
 PUBLIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "public")
 
 
-@app.get("/")
-def local_home():
-    return send_from_directory(PUBLIC_DIR, "index.html")
+if not IS_VERCEL:
+    @app.get("/")
+    def local_home():
+        return send_from_directory(PUBLIC_DIR, "index.html")
 
-
-@app.get("/<path:filename>")
-def local_static(filename):
-    return send_from_directory(PUBLIC_DIR, filename)
+    @app.get("/<path:filename>")
+    def local_static(filename):
+        return send_from_directory(PUBLIC_DIR, filename)
 
 
 if __name__ == "__main__":
